@@ -15,9 +15,11 @@ load("data.RData")
 ```
 
 ```{css}
+
 .row {
 margin: 40px 0;
 }
+
 ```
 
 ```{r}
@@ -126,6 +128,36 @@ p2 <- df |>
   e_title("2º Turno 2022 - % votos") |> 
   e_theme("infographic")
 
-e_arrange(p1, p2, rows = 2, cols = 1)
+teste <- df_eleicoes_pr_2turno |> 
+  dplyr::mutate(date_totalizacao = ifelse(date_totalizacao == " ",
+                                          "2022-10-30 17:00:00",
+                                          date_totalizacao)) |> 
+  dplyr::distinct(date_totalizacao, cand, porcentagem_votos) |> 
+  tidyr::pivot_wider(names_from = cand, values_from = porcentagem_votos) |> 
+  dplyr::mutate(Lula = dplyr::lead(Lula) - Lula) |> 
+  dplyr::mutate(Bolsonaro = dplyr::lead(Bolsonaro) - Bolsonaro,
+                date_totalizacao = lubridate::ymd_hms(date_totalizacao)) |> 
+  dplyr::filter(date_totalizacao < 
+                  lubridate::ymd_hms("2022-10-30 20:00:00")) 
+
+p3 <- teste |> 
+  dplyr::slice(-1) |> 
+  e_charts(date_totalizacao) |> 
+  e_line(Lula, symbol = "none") |> 
+  e_line(Bolsonaro, symbol = "none") |> 
+  e_datazoom(y_index = 0, type = "slider") |> 
+  e_datazoom() |> 
+  e_animation(duration = 1000) |> 
+  e_tooltip(
+    formatter = htmlwidgets::JS(
+      "function (params) {
+          return params.value[3] + ': ' + params.value[0];
+        }"
+    )) |> 
+  e_title("2º Turno 2022 - Variação % votos") |> 
+  e_theme("infographic") |> 
+  e_connect(c("chart1", "chart2"))
+
+e_arrange(p1, p2, p3, rows = 3, cols = 1)
 
 ```
