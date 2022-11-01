@@ -33,7 +33,8 @@ df <- df_eleicoes_pr_2turno |>
   dplyr::mutate(date_totalizacao = ifelse(date_totalizacao == " ",
                                           "2022-10-30 17:00:00",
                                           date_totalizacao),
-                date_totalizacao = lubridate::ymd_hms(date_totalizacao))
+                date_totalizacao = lubridate::ymd_hms(date_totalizacao)) %>% 
+  dplyr::mutate(cand = factor(cand, levels = c("Lula", "Bolsonaro")))
 
 # axis
 label_js2 <- list(
