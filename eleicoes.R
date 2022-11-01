@@ -158,3 +158,4 @@ teste |>
     )) |> 
   e_title("2º Turno 2022 - Variação % votos") |> 
   e_theme("infographic")
+  
