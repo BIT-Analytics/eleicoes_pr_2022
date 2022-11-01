@@ -140,7 +140,8 @@ teste <- df_eleicoes_pr_2turno |>
   dplyr::distinct(date_totalizacao, cand, porcentagem_votos) |> 
   tidyr::pivot_wider(names_from = cand, values_from = porcentagem_votos) |> 
   dplyr::mutate(Lula = dplyr::lead(Lula) - Lula) |> 
-  dplyr::mutate(Bolsonaro = dplyr::lead(Bolsonaro) - Bolsonaro)
+  dplyr::mutate(Bolsonaro = dplyr::lead(Bolsonaro) - Bolsonaro,
+                date_totalizacao = lubridate::ymd_hms(date_totalizacao))
 
 teste |> 
   dplyr::slice(-1) |> 
