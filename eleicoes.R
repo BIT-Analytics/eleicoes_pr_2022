@@ -2,11 +2,11 @@
 
 # https://github.com/wcota/br_eleicoes_2022_2T/blob/main/br.csv
 
-caminho <- "https://raw.githubusercontent.com/wcota/br_eleicoes_2022_2T/main/br.csv"
-df_eleicoes_pr_2turno <- read.csv(caminho)
+# caminho <- "https://raw.githubusercontent.com/wcota/br_eleicoes_2022_2T/main/br.csv"
+# df_eleicoes_pr_2turno <- read.csv(caminho)
 
 # save ddf
-save(df_eleicoes_pr_2turno, file = "dados/df.RData")
+# save(df_eleicoes_pr_2turno, file = "dados/df.RData")
 
 
 # grafico ----
@@ -91,7 +91,8 @@ p2 <- df |>
                   lubridate::ymd_hms("2022-10-30 20:00:09"),
                 porcentagem_votos != 0) |> 
   dplyr::group_by(cand) |> 
-  e_charts(date_totalizacao) |> 
+  e_charts(date_totalizacao,
+           elementId = "chart2") |> 
   e_line(porcentagem_votos, symbol = "none",
          endLabel = list(show = T,
                          formatter =  htmlwidgets::JS(
@@ -108,10 +109,7 @@ p2 <- df |>
                     itemStyle = list(shadowBlur = 2))) |> 
   e_y_axis(axisLabel = label_js2, 
            interval = 2, max = 65, min = 40) |> 
-  e_datazoom(x_index = 0,
-             type = "slider", 
-             toolbox = FALSE,
-             bottom = 5) |> 
+  e_datazoom(show = FALSE) |> 
   e_datazoom(y_index = 0, type = "slider") |> 
   e_animation(duration = 1000) |> 
   e_tooltip(
@@ -121,14 +119,11 @@ p2 <- df |>
         }"
     )) |> 
   e_title("2º Turno 2022 - % votos") |> 
-  e_theme("infographic") |> 
-  e_connect(c("chart1"))
+  e_theme("infographic") 
 p2
 
 
 
-
-e_arrange(p1, p2, rows = 2, cols = 1)
 
 
 
@@ -141,14 +136,17 @@ teste <- df_eleicoes_pr_2turno |>
   tidyr::pivot_wider(names_from = cand, values_from = porcentagem_votos) |> 
   dplyr::mutate(Lula = dplyr::lead(Lula) - Lula) |> 
   dplyr::mutate(Bolsonaro = dplyr::lead(Bolsonaro) - Bolsonaro,
-                date_totalizacao = lubridate::ymd_hms(date_totalizacao))
+                date_totalizacao = lubridate::ymd_hms(date_totalizacao)) |> 
+  dplyr::filter(date_totalizacao < 
+                  lubridate::ymd_hms("2022-10-30 20:00:00")) 
 
-teste |> 
+p3 <- teste |> 
   dplyr::slice(-1) |> 
   e_charts(date_totalizacao) |> 
   e_line(Lula, symbol = "none") |> 
   e_line(Bolsonaro, symbol = "none") |> 
   e_datazoom(y_index = 0, type = "slider") |> 
+  e_datazoom() |> 
   e_animation(duration = 1000) |> 
   e_tooltip(
     formatter = htmlwidgets::JS(
@@ -157,5 +155,9 @@ teste |>
         }"
     )) |> 
   e_title("2º Turno 2022 - Variação % votos") |> 
-  e_theme("infographic")
+  e_theme("infographic") |> 
+  e_connect(c("chart1", "chart2"))
+p3
+
+e_arrange(p1, p2, p3, rows = 3, cols = 1)
   
