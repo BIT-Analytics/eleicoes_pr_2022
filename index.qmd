@@ -33,9 +33,7 @@ df <- df_eleicoes_pr_2turno |>
   dplyr::mutate(date_totalizacao = ifelse(date_totalizacao == " ",
                                           "2022-10-30 17:00:00",
                                           date_totalizacao),
-                date_totalizacao = lubridate::ymd_hms(date_totalizacao)) |> 
-  dplyr::mutate(cand = factor(cand, c('Lula', 'Bolsonaro')))
-
+                date_totalizacao = lubridate::ymd_hms(date_totalizacao))
 
 # axis
 label_js2 <- list(
@@ -56,7 +54,8 @@ p1 <- df |>
   dplyr::filter(date_totalizacao < 
                   lubridate::ymd_hms("2022-10-30 20:00:00")) |> 
   dplyr::group_by(cand) |> 
-  e_charts(date_totalizacao) |> 
+  e_charts(date_totalizacao,
+           elementId = "chart1") |> 
   e_line(votos, symbol = "none",
          endLabel = list(show = T,
                          formatter =  htmlwidgets::JS(
@@ -73,10 +72,7 @@ p1 <- df |>
            itemStyle = list(shadowBlur = 2))) |> 
   e_y_axis(axisLabel = label_js2, 
            interval = 8000000, max = 64000000) |> 
-  e_datazoom(x_index = 0,
-             type = "slider", 
-             toolbox = FALSE,
-             bottom = 5) |> 
+  e_datazoom(show = FALSE) |> 
   e_datazoom(y_index = 0, type = "slider") |> 
   e_animation(duration = 1000) |> 
   e_tooltip(
@@ -96,7 +92,8 @@ p2 <- df |>
                   lubridate::ymd_hms("2022-10-30 20:00:09"),
                 porcentagem_votos != 0) |> 
   dplyr::group_by(cand) |> 
-  e_charts(date_totalizacao) |> 
+  e_charts(date_totalizacao,
+           elementId = "chart2") |> 
   e_line(porcentagem_votos, symbol = "none",
          endLabel = list(show = T,
                          formatter =  htmlwidgets::JS(
@@ -113,10 +110,7 @@ p2 <- df |>
                     itemStyle = list(shadowBlur = 2))) |> 
   e_y_axis(axisLabel = label_js2, 
            interval = 2, max = 65, min = 40) |> 
-  e_datazoom(x_index = 0,
-             type = "slider", 
-             toolbox = FALSE,
-             bottom = 5) |> 
+  e_datazoom(show = FALSE) |> 
   e_datazoom(y_index = 0, type = "slider") |> 
   e_animation(duration = 1000) |> 
   e_tooltip(
@@ -126,8 +120,9 @@ p2 <- df |>
         }"
     )) |> 
   e_title("2º Turno 2022 - % votos") |> 
-  e_theme("infographic")
+  e_theme("infographic") 
 
+# variacao
 teste <- df_eleicoes_pr_2turno |> 
   dplyr::mutate(date_totalizacao = ifelse(date_totalizacao == " ",
                                           "2022-10-30 17:00:00",
