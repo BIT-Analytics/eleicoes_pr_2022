@@ -139,26 +139,15 @@ teste <- df_eleicoes_pr_2turno |>
                                           date_totalizacao)) |> 
   dplyr::distinct(date_totalizacao, cand, porcentagem_votos) |> 
   tidyr::pivot_wider(names_from = cand, values_from = porcentagem_votos) |> 
-  dplyr::mutate(Lula1 = dplyr::lead(Lula) - Lula) |> 
-  dplyr::mutate(Bolsonaro1 = dplyr::lead(Bolsonaro) - Bolsonaro)
+  dplyr::mutate(Lula = dplyr::lead(Lula) - Lula) |> 
+  dplyr::mutate(Bolsonaro = dplyr::lead(Bolsonaro) - Bolsonaro)
 
 teste |> 
   dplyr::slice(-1) |> 
   e_charts(date_totalizacao) |> 
-  e_line(Lula1, symbol = "none") |> 
-  e_line(Bolsonaro1, symbol = "none") |> 
+  e_line(Lula, symbol = "none") |> 
+  e_line(Bolsonaro, symbol = "none") |> 
   e_datazoom(y_index = 0, type = "slider") |> 
-  e_zoom(
-    dataZoomIndex = 4,
-    start = -.02,
-    end = 0.02,
-    btn = "BUTTON") |> 
-  e_button(
-    id = "BUTTON", 
-    htmltools::tags$i(class = "fa fa-search"), # passed to the button
-    class = "btn btn-default",
-    "Zoom in"
-  ) |> 
   e_animation(duration = 1000) |> 
   e_tooltip(
     formatter = htmlwidgets::JS(
